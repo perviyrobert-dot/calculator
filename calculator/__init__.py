@@ -1,6 +1,6 @@
 """Калькулятор математических выражений."""
 
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal, Optional, Union
 
 from .core import evaluate_expression
 from .exceptions import CalculatorError, EvaluationError, ParseError, TokenizeError
@@ -21,10 +21,10 @@ def calculator(
     expression: str,
     *,
     verbose: bool = False,
-    variables: Optional[Dict[str, float | int]] = None,
+    variables: Optional[Dict[str, Union[float, int]]] = None,
     precision: Optional[int] = None,
     angle_mode: Literal["rad", "deg"] = "rad",
-) -> int | float:
+) -> Union[int, float]:
     """Вычисляет математическое выражение.
 
     Args:
@@ -55,7 +55,7 @@ class Calculator:
         self,
         *,
         verbose: bool = False,
-        variables: Optional[Dict[str, float | int]] = None,
+        variables: Optional[Dict[str, Union[float, int]]] = None,
         precision: Optional[int] = None,
         angle_mode: Literal["rad", "deg"] = "rad",
     ):
@@ -64,7 +64,7 @@ class Calculator:
         self.precision = precision
         self.angle_mode = angle_mode
 
-    def evaluate(self, expression: str) -> int | float:
+    def evaluate(self, expression: str) -> Union[int, float]:
         return calculator(
             expression,
             verbose=self.verbose,
