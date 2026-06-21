@@ -1,0 +1,18 @@
+```makefile
+.PHONY: test lint format
+
+install:
+	pip install -e ".[dev]"
+
+test:
+	pytest tests/ -v --cov=calculator --cov-fail-under=90
+
+lint:
+	black --check --line-length=100 calculator/ tests/
+	flake8 calculator/ tests/
+	mypy --strict calculator/
+
+format:
+	black --line-length=100 calculator/ tests/
+
+ci: lint test
