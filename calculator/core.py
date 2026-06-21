@@ -1,6 +1,6 @@
 """Оркестрация pipeline."""
 
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal, Optional, Union
 
 from .evaluator import Evaluator
 from .parser import Parser
@@ -9,10 +9,10 @@ from .parser import Parser
 def evaluate_expression(
     expression: str,
     verbose: bool = False,
-    variables: Optional[Dict[str, float | int]] = None,
+    variables: Optional[Dict[str, Union[float, int]]] = None,
     precision: Optional[int] = None,
     angle_mode: Literal["rad", "deg"] = "rad",
-) -> float | int:
+) -> Union[float, int]:
     if not expression or not expression.strip():
         raise ValueError("empty expression")
 
