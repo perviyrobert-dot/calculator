@@ -1,6 +1,6 @@
 """Парсер с рекурсивным спуском."""
 
-from typing import List, Optional, Sequence, Union
+from typing import List, Optional
 
 from .ast_nodes import (
     ASTNode,
