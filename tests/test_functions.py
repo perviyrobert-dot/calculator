@@ -1,6 +1,5 @@
 """Тесты функций."""
 
-import math
 import pytest
 
 from calculator import calculator
