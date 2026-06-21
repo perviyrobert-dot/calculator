@@ -32,7 +32,10 @@ class Parser:
         statements = []
 
         while self.current_token and self.current_token.type != TokenType.EOF:
-            if self.current_token.type == TokenType.IDENTIFIER and self._peek_next() == TokenType.ASSIGN:
+            if (
+                self.current_token.type == TokenType.IDENTIFIER
+                and self._peek_next() == TokenType.ASSIGN
+            ):
                 statements.append(self._parse_assignment())
             else:
                 statements.append(self._parse_expression())
@@ -132,7 +135,10 @@ class Parser:
             return NumberNode(value=float(token.value), position=token.position)
 
         if token.type == TokenType.IDENTIFIER:
-            if self.pos + 1 < len(self.tokens) and self.tokens[self.pos + 1].type == TokenType.LPAREN:
+            if (
+                self.pos + 1 < len(self.tokens)
+                and self.tokens[self.pos + 1].type == TokenType.LPAREN
+            ):
                 return self._parse_function_call()
             else:
                 self._advance()
