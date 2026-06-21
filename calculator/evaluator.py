@@ -23,7 +23,7 @@ from .functions import FUNCTIONS
 class Evaluator:
     """Вычислитель AST."""
 
-    def __init__(self, verbose: bool = False, angle_mode: str = "rad"):
+    def __init__(self, verbose: bool = False, angle_mode: str = "rad") -> None:
         self.verbose = verbose
         self.angle_mode = angle_mode
         self.logger = logging.getLogger("calculator.evaluator")
@@ -37,7 +37,6 @@ class Evaluator:
         precision: Optional[int] = None,
     ) -> Union[float, int]:
         """Вычисление AST."""
-        # Инициализация контекста
         self.local_context = {**CONSTANTS}
         if variables:
             self.local_context.update({k: float(v) for k, v in variables.items()})
@@ -45,15 +44,12 @@ class Evaluator:
 
         result = self._evaluate_node(node)
 
-        # Постобработка
         if precision is not None:
             result = round(result, precision)
 
-        # Приведение к int если целое
         if isinstance(result, float) and result.is_integer():
             result = int(result)
 
-        # Нормализация -0.0
         if isinstance(result, float) and result == 0.0:
             result = 0.0
 
@@ -102,7 +98,6 @@ class Evaluator:
                     raise ZeroDivisionError("division by zero")
                 result = left % right
             elif node.operator == '**':
-                # 0**0 = 1 (согласовано с Python)
                 if left == 0 and right == 0:
                     result = 1.0
                 else:
@@ -142,7 +137,6 @@ class Evaluator:
 
         arity, func = FUNCTIONS[node.name]
 
-        # Проверка арности
         if arity != -1 and len(node.arguments) != arity:
             raise EvaluationError(
                 f"{node.name}() takes {arity} argument(s), got {len(node.arguments)}"
@@ -151,14 +145,11 @@ class Evaluator:
         if arity == -1 and len(node.arguments) == 0:
             raise EvaluationError(f"{node.name}() requires at least one argument")
 
-        # Вычисление аргументов
         args = [self._evaluate_node(arg) for arg in node.arguments]
 
-        # Специальная обработка для тригонометрических функций
         if node.name in ('sin', 'cos', 'tan') and self.angle_mode == "deg":
             args[0] = math.radians(args[0])
 
-        # Специальные проверки для некоторых функций
         if node.name == 'sqrt' and args[0] < 0:
             raise EvaluationError("cannot take sqrt of negative number")
 
