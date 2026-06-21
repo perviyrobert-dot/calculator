@@ -61,8 +61,9 @@ def test_calculator_error():
 def test_negative_zero_normalization():
     """Тестирование нормализации -0.0."""
     result = calculator("-0.0")
-    assert result == 0.0
-    assert isinstance(result, float)
+    assert result == 0
+    # Проверяем, что это целое число (int), а не float
+    assert isinstance(result, int)
 
 
 def test_large_factorial():
