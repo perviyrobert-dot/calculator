@@ -20,7 +20,7 @@ from .tokenizer import Lexer, TokenType
 class Parser:
     """Парсер с рекурсивным спуском."""
 
-    def __init__(self, expression: str):
+    def __init__(self, expression: str) -> None:
         self.lexer = Lexer(expression)
         self.tokens = self.lexer.tokenize()
         self.pos = 0
@@ -201,7 +201,7 @@ class Parser:
         else:
             self.current_token = None
 
-    def _consume(self, expected_type: TokenType):
+    def _consume(self, expected_type: TokenType) -> TokenType:
         """Потребление токена ожидаемого типа."""
         if not self.current_token:
             raise ParseError(f"expected {expected_type.name}, got EOF", 0)
