@@ -13,58 +13,64 @@ class NumberNode(ASTNode):
     """Узел для чисел."""
     def __init__(self, value: float, position: Optional[int] = None) -> None:
         super().__init__(position)
-        self.value: float = value
+        self.value = value
 
 
 class VariableNode(ASTNode):
     """Узел для переменных."""
     def __init__(self, name: str, position: Optional[int] = None) -> None:
         super().__init__(position)
-        self.name: str = name
+        self.name = name
 
 
 class BinaryOpNode(ASTNode):
     """Узел для бинарных операций."""
-    def __init__(self, left: ASTNode, operator: str, right: ASTNode, position: Optional[int] = None) -> None:
+    def __init__(
+        self,
+        left: ASTNode,
+        operator: str,
+        right: ASTNode,
+        position: Optional[int] = None
+    ) -> None:
         super().__init__(position)
-        self.left: ASTNode = left
-        self.operator: str = operator
-        self.right: ASTNode = right
+        self.left = left
+        self.operator = operator
+        self.right = right
 
 
 class UnaryOpNode(ASTNode):
     """Узел для унарных операций."""
     def __init__(self, operator: str, operand: ASTNode, position: Optional[int] = None) -> None:
         super().__init__(position)
-        self.operator: str = operator
-        self.operand: ASTNode = operand
+        self.operator = operator
+        self.operand = operand
 
 
 class PercentNode(ASTNode):
     """Узел для унарного процента."""
     def __init__(self, operand: ASTNode, position: Optional[int] = None) -> None:
         super().__init__(position)
-        self.operand: ASTNode = operand
+        self.operand = operand
 
 
 class FunctionCallNode(ASTNode):
     """Узел для вызова функции."""
     def __init__(self, name: str, arguments: List[ASTNode], position: Optional[int] = None) -> None:
         super().__init__(position)
-        self.name: str = name
-        self.arguments: List[ASTNode] = arguments
+        self.name = name
+        self.arguments = arguments
 
 
 class AssignmentNode(ASTNode):
     """Узел для присваивания."""
     def __init__(self, variable: str, expression: ASTNode, position: Optional[int] = None) -> None:
         super().__init__(position)
-        self.variable: str = variable
-        self.expression: ASTNode = expression
+        self.variable = variable
+        self.expression = expression
 
 
 class ProgramNode(ASTNode):
     """Узел для программы (последовательность выражений)."""
     def __init__(self, statements: List[ASTNode], position: Optional[int] = None) -> None:
         super().__init__(position)
-        self.statements: List[ASTNode] = statements
+        self.statements = statements
