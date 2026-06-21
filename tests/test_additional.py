@@ -2,7 +2,6 @@
 
 import logging
 
-import pytest
 
 from calculator import calculator
 
