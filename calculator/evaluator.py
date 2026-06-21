@@ -2,9 +2,19 @@
 
 import logging
 import math
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
-from .ast_nodes import *
+from .ast_nodes import (
+    ASTNode,
+    AssignmentNode,
+    BinaryOpNode,
+    FunctionCallNode,
+    NumberNode,
+    PercentNode,
+    ProgramNode,
+    UnaryOpNode,
+    VariableNode,
+)
 from .constants import CONSTANTS
 from .exceptions import EvaluationError
 from .functions import FUNCTIONS
@@ -23,9 +33,9 @@ class Evaluator:
     def evaluate(
         self,
         node: ASTNode,
-        variables: Optional[Dict[str, float | int]] = None,
+        variables: Optional[Dict[str, Union[float, int]]] = None,
         precision: Optional[int] = None,
-    ) -> float | int:
+    ) -> Union[float, int]:
         """Вычисление AST."""
         # Инициализация контекста
         self.local_context = {**CONSTANTS}
@@ -61,7 +71,7 @@ class Evaluator:
 
         if isinstance(node, UnaryOpNode):
             operand = self._evaluate_node(node.operand)
-            if node.operator == "-":
+            if node.operator == '-':
                 return -operand
             return operand
 
@@ -73,30 +83,30 @@ class Evaluator:
             left = self._evaluate_node(node.left)
             right = self._evaluate_node(node.right)
 
-            if node.operator == "+":
+            if node.operator == '+':
                 result = left + right
-            elif node.operator == "-":
+            elif node.operator == '-':
                 result = left - right
-            elif node.operator == "*":
+            elif node.operator == '*':
                 result = left * right
-            elif node.operator == "/":
+            elif node.operator == '/':
                 if right == 0:
                     raise ZeroDivisionError("division by zero")
                 result = left / right
-            elif node.operator == "//":
+            elif node.operator == '//':
                 if right == 0:
                     raise ZeroDivisionError("division by zero")
                 result = left // right
-            elif node.operator == "%":
+            elif node.operator == '%':
                 if right == 0:
                     raise ZeroDivisionError("division by zero")
                 result = left % right
-            elif node.operator == "**":
+            elif node.operator == '**':
                 # 0**0 = 1 (согласовано с Python)
                 if left == 0 and right == 0:
                     result = 1.0
                 else:
-                    result = left**right
+                    result = left ** right
             else:
                 raise EvaluationError(f"unknown operator '{node.operator}'")
 
@@ -104,11 +114,7 @@ class Evaluator:
                 self.step += 1
                 self.logger.debug(
                     "step=%d op=%s operands=[%s, %s] result=%s",
-                    self.step,
-                    node.operator,
-                    left,
-                    right,
-                    result,
+                    self.step, node.operator, left, right, result
                 )
 
             return result
@@ -149,17 +155,17 @@ class Evaluator:
         args = [self._evaluate_node(arg) for arg in node.arguments]
 
         # Специальная обработка для тригонометрических функций
-        if node.name in ("sin", "cos", "tan") and self.angle_mode == "deg":
+        if node.name in ('sin', 'cos', 'tan') and self.angle_mode == "deg":
             args[0] = math.radians(args[0])
 
         # Специальные проверки для некоторых функций
-        if node.name == "sqrt" and args[0] < 0:
+        if node.name == 'sqrt' and args[0] < 0:
             raise EvaluationError("cannot take sqrt of negative number")
 
-        if node.name in ("log", "ln") and args[0] <= 0:
+        if node.name in ('log', 'ln') and args[0] <= 0:
             raise EvaluationError("logarithm argument must be positive")
 
-        if node.name == "factorial":
+        if node.name == 'factorial':
             if not isinstance(args[0], (int, float)) or not args[0].is_integer() or args[0] < 0:
                 raise EvaluationError("factorial requires non-negative integer")
             args[0] = int(args[0])
@@ -172,7 +178,8 @@ class Evaluator:
         if self.verbose:
             self.step += 1
             self.logger.debug(
-                "step=%d op=%s operands=%s result=%s", self.step, node.name, args, result
+                "step=%d op=%s operands=%s result=%s",
+                self.step, node.name, args, result
             )
 
         return float(result)
