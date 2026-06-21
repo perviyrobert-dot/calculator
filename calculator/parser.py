@@ -2,7 +2,17 @@
 
 from typing import Optional
 
-from .ast_nodes import *
+from .ast_nodes import (
+    ASTNode,
+    AssignmentNode,
+    BinaryOpNode,
+    FunctionCallNode,
+    NumberNode,
+    PercentNode,
+    ProgramNode,
+    UnaryOpNode,
+    VariableNode,
+)
 from .exceptions import ParseError
 from .tokenizer import Lexer, TokenType
 
@@ -22,10 +32,7 @@ class Parser:
         statements = []
 
         while self.current_token and self.current_token.type != TokenType.EOF:
-            if (
-                self.current_token.type == TokenType.IDENTIFIER
-                and self._peek_next() == TokenType.ASSIGN
-            ):
+            if self.current_token.type == TokenType.IDENTIFIER and self._peek_next() == TokenType.ASSIGN:
                 statements.append(self._parse_assignment())
             else:
                 statements.append(self._parse_expression())
@@ -48,7 +55,7 @@ class Parser:
         node = self._parse_term()
 
         while self.current_token and self.current_token.type == TokenType.OPERATOR:
-            if self.current_token.value in ("+", "-"):
+            if self.current_token.value in ('+', '-'):
                 op = self.current_token.value
                 pos = self.current_token.position
                 self._advance()
@@ -64,7 +71,7 @@ class Parser:
         node = self._parse_factor()
 
         while self.current_token and self.current_token.type == TokenType.OPERATOR:
-            if self.current_token.value in ("*", "/", "//", "%"):
+            if self.current_token.value in ('*', '/', '//', '%'):
                 op = self.current_token.value
                 pos = self.current_token.position
                 self._advance()
@@ -80,11 +87,11 @@ class Parser:
         node = self._parse_unary()
 
         while self.current_token and self.current_token.type == TokenType.OPERATOR:
-            if self.current_token.value == "**":
+            if self.current_token.value == '**':
                 pos = self.current_token.position
                 self._advance()
                 right = self._parse_factor()
-                node = BinaryOpNode(left=node, operator="**", right=right, position=pos)
+                node = BinaryOpNode(left=node, operator='**', right=right, position=pos)
             else:
                 break
 
@@ -93,7 +100,7 @@ class Parser:
     def _parse_unary(self) -> ASTNode:
         """Разбор унарных операторов."""
         if self.current_token and self.current_token.type == TokenType.OPERATOR:
-            if self.current_token.value in ("+", "-"):
+            if self.current_token.value in ('+', '-'):
                 op = self.current_token.value
                 pos = self.current_token.position
                 self._advance()
@@ -125,10 +132,7 @@ class Parser:
             return NumberNode(value=float(token.value), position=token.position)
 
         if token.type == TokenType.IDENTIFIER:
-            if (
-                self.pos + 1 < len(self.tokens)
-                and self.tokens[self.pos + 1].type == TokenType.LPAREN
-            ):
+            if self.pos + 1 < len(self.tokens) and self.tokens[self.pos + 1].type == TokenType.LPAREN:
                 return self._parse_function_call()
             else:
                 self._advance()
@@ -199,7 +203,7 @@ class Parser:
         if self.current_token.type != expected_type:
             raise ParseError(
                 f"expected {expected_type.name}, got {self.current_token.type.name}",
-                self.current_token.position,
+                self.current_token.position
             )
 
         token = self.current_token
