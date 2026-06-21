@@ -1,6 +1,6 @@
 """Парсер с рекурсивным спуском."""
 
-from typing import Optional
+from typing import List, Optional, Sequence, Union
 
 from .ast_nodes import (
     ASTNode,
@@ -14,7 +14,7 @@ from .ast_nodes import (
     VariableNode,
 )
 from .exceptions import ParseError
-from .tokenizer import Lexer, TokenType
+from .tokenizer import Lexer, Token, TokenType
 
 
 class Parser:
@@ -22,14 +22,14 @@ class Parser:
 
     def __init__(self, expression: str) -> None:
         self.lexer = Lexer(expression)
-        self.tokens = self.lexer.tokenize()
-        self.pos = 0
-        self.current_token = self.tokens[0] if self.tokens else None
-        self._paren_count = 0
+        self.tokens: List[Token] = self.lexer.tokenize()
+        self.pos: int = 0
+        self.current_token: Optional[Token] = self.tokens[0] if self.tokens else None
+        self._paren_count: int = 0
 
     def parse(self) -> ProgramNode:
         """Разбор программы."""
-        statements = []
+        statements: List[ASTNode] = []
 
         while self.current_token and self.current_token.type != TokenType.EOF:
             if (
@@ -59,10 +59,10 @@ class Parser:
 
         while self.current_token and self.current_token.type == TokenType.OPERATOR:
             if self.current_token.value in ('+', '-'):
-                op = self.current_token.value
-                pos = self.current_token.position
+                op: str = self.current_token.value
+                pos: int = self.current_token.position
                 self._advance()
-                right = self._parse_term()
+                right: ASTNode = self._parse_term()
                 node = BinaryOpNode(left=node, operator=op, right=right, position=pos)
             else:
                 break
@@ -163,7 +163,7 @@ class Parser:
         self._consume(TokenType.LPAREN)
         self._paren_count += 1
 
-        args = []
+        args: List[ASTNode] = []
         if self.current_token and self.current_token.type != TokenType.RPAREN:
             args.append(self._parse_expression())
             while self.current_token and self.current_token.type == TokenType.COMMA:
@@ -201,7 +201,7 @@ class Parser:
         else:
             self.current_token = None
 
-    def _consume(self, expected_type: TokenType) -> TokenType:
+    def _consume(self, expected_type: TokenType) -> Token:
         """Потребление токена ожидаемого типа."""
         if not self.current_token:
             raise ParseError(f"expected {expected_type.name}, got EOF", 0)
